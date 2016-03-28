@@ -23,10 +23,13 @@ def kuromasu_csp_model_1(initial_futoshiki_board):
               for col in range(0,len(initial_futoshiki_board[row])):
                      v = Variable(str(row) + "."+ str(col))         
                      if  (initial_futoshiki_board[row][col] == ''):
+                            #if a square is empty, it can be b or w
                             v.add_domain_values(domain)
                             domain_row.append(domain)                     
                      else:
+                            #if a square isnt empty, its a number and can only be white
                             v.add_domain_values(['w'])
+                            
                             n = (int)(initial_futoshiki_board[row][col])
                             v.set_attribute(n)                                            
                             domain_row.append(['w'])
@@ -35,6 +38,8 @@ def kuromasu_csp_model_1(initial_futoshiki_board):
               var_2d_list.append(var_row)
               domain_2d_list.append(domain_row)
        
+       
+       #add constraints to make sure no two squares in a row are black
        for x in range(0, len(var_2d_list)):
             
               for y in range(0,len(var_2d_list[x]) -1):    
@@ -103,35 +108,38 @@ def kuromasu_csp_model_1(initial_futoshiki_board):
                             
                             c.add_satisfying_tuples(sat_tuples)
                             surround_constraints.append(c)
+       
+       #add constraints for number squares       
        number_constraints =[]
        for x in range(0, len(var_2d_list)):
               for y in range(0, len(var_2d_list[x])):       
                      if (var_2d_list[x][y].attribute > 0):
                             #this variable is a number
                             col_var_list = []
+                            #get all the variables in that column
                             for z in range(0,len(var_2d_list)):
                                    col_var_list.append(var_2d_list[z][y])                            
                             
-                            var_list = var_2d_list[x]
-                            print(col_var_list)
-                            print(var_list)
+                            var_list = var_2d_list[x] #get all the variables from that row
                             col_val_list = [var.domain() for var in col_var_list]
+                            
                             val_list = [var.domain() for var in var_list]
+                            
                             sat_tuples = []
                             total_var_list= []
-                            total_var_list.extend(var_list)
-                            
-                            total_var_list.extend(col_var_list[0:x] + col_var_list[x+1:])
+                            total_var_list.extend(var_list)                            
+                            total_var_list.extend(col_var_list[0:x] + col_var_list[x+1:]) #this makes sure the the number variable doesnt get added twice as it exists both in col_var_list and var_list
                             
                             c = Constraint("c_number_constraint_" + str(x) + str(y), total_var_list)
-                            print(str(var_2d_list[x][y].attribute ) +" attribute goal")
+                            
                             for t in itertools.product(*val_list):
                                    for r in itertools.product(*col_val_list):
-                                          row_sum =   return_longest_sequence(t,y)
-                                          col_sum= return_longest_sequence(r,x) -1
+                                          row_sum =   return_longest_sequence(t,y) 
+                                          col_sum= return_longest_sequence(r,x) -1 #since the function counts the variable also, subtracting one to make sure it doesnt get double counted 
+                                          
                                           if (row_sum + col_sum == var_2d_list[x][y].attribute):                                          
                                                  sat_tuples.append(t + r[0:x] + r[x+1:])
-                            print(sat_tuples)
+                            
                             c.add_satisfying_tuples(sat_tuples)
                             number_constraints.append(c)
                      
@@ -151,8 +159,10 @@ def kuromasu_csp_model_1(initial_futoshiki_board):
        for c in number_constraints:
               csp.add_constraint(c)       
        return (csp,var_2d_list)
+
+
 def return_longest_sequence(t,y):
-       
+       '''Returns the longest sequence of unbroken white squares from either side of the variable'''
        _sum = 0
        for i in range(y,len(t)):
               if (t[i] == 'w'):
@@ -164,6 +174,5 @@ def return_longest_sequence(t,y):
                      _sum +=1
               else:
                      break
-       print(t)
-       print(_sum)
+   
        return _sum
