@@ -415,7 +415,25 @@ class BT:
             if var.is_assigned():
                 var.unassign()
             var.restore_curdom()
-
+    def extractMCVvar(self):
+            '''Remove variable with minimum sized cur domain from list of
+               unassigned vars. Would be faster to use heap...but this is
+               not production code.
+            '''
+    
+            max_constraint = -1
+            mv = None
+            for v in self.unasgn_vars:
+                
+                if max_constraint < 0:
+                    max_constraint = len(self.csp.get_cons_with_var(v))
+                    mv = v
+                elif len(self.csp.get_cons_with_var(v)) < md:
+                    md = len(self.csp.get_cons_with_var(v))
+                    mv = v
+            self.unasgn_vars.remove(mv)
+            return mv
+        
     def extractMRVvar(self):
         '''Remove variable with minimum sized cur domain from list of
            unassigned vars. Would be faster to use heap...but this is
@@ -516,7 +534,7 @@ class BT:
             #all variables assigned
             return True
         else:
-            var = self.extractMRVvar()
+            var = self.extractMCVvar()
             if self.TRACE:
                 print('  ' * level, "bt_recurse var = ", var)
 
