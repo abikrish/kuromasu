@@ -75,7 +75,7 @@ class Variable:
     #
     #set up and info methods
     #
-    def __init__(self, name, domain=[]):
+    def __init__(self, name, domain=[], attribute=0):
         '''Create a variable object, specifying its name (a
         string). Optionally specify the initial domain.
         '''
@@ -83,6 +83,7 @@ class Variable:
         self.dom = list(domain)         #Make a copy of passed domain
         self.curdom = [True] * len(domain)      #using list
         #for bt_search
+        self.attribute = attribute
         self.assignedValue = None
 
     def add_domain_values(self, values):
@@ -99,6 +100,8 @@ class Variable:
     def domain(self):
         '''return the variable's (permanent) domain'''
         return(list(self.dom))
+    def set_attribute(self,i):
+        self.attribute = i
 
     #
     #methods for current domain (pruning and unpruning)
