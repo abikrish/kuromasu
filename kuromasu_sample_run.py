@@ -57,10 +57,10 @@ puzzle7 = [['9', '', '', '8', '', '9', '', '8', ''],
            ['', '', '7', '', '', '', '', '', ''],
            ['', '7', '', '5', '', '4', '', '', '4']]
 
-tescases = [puzzle1, puzzle2, puzzle3, puzzle4, puzzle5, puzzle6, puzzle7]
+testcases = [puzzle1, puzzle2, puzzle3, puzzle4, puzzle5, puzzle6, puzzle7]
 
 print("\n\n\nNow testing heuristic 1, removing variable with min sized cur domain.\n\n\n")
-for test in tescases:
+for test in testcases:
     csp, var_array = kuromasu_csp_model_1(test)
     solver = BT(csp)
     print("GAC")
@@ -70,7 +70,7 @@ for test in tescases:
     print("===========")
 
 print("\n\n\nNow testing heuristic 2, removing variable with maximum number of contraints.\n\n\n")
-for test in tescases:
+for test in testcases:
     csp, var_array = kuromasu_csp_model_1(test)
     solver = BT(csp)
     print("GAC")
