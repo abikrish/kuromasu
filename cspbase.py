@@ -419,7 +419,7 @@ class BT:
                 var.unassign()
             var.restore_curdom()
     def extractMCVvar(self):
-        '''Remove variable with minimum sized cur domain from list of
+        '''Remove variable with maximum contraints from list of
            unassigned vars. Would be faster to use heap...but this is
            not production code.
         '''
@@ -435,7 +435,8 @@ class BT:
                 max_constraint = len(self.csp.get_cons_with_var(v))
                 mv = v
         self.unasgn_vars.remove(mv)
-        return mv    
+        return mv
+
     def extractMRVvar(self):
         '''Remove variable with minimum sized cur domain from list of
            unassigned vars. Would be faster to use heap...but this is
@@ -458,7 +459,7 @@ class BT:
         '''Add variable back to list of unassigned vars'''
         self.unasgn_vars.append(var)
         
-    def bt_search(self,propagator):
+    def bt_search(self,propagator, newheuristic):
         '''Try to solve the CSP using specified propagator routine
 
            propagator == a function with the following template
@@ -511,7 +512,7 @@ class BT:
             print("CSP{} detected contradiction at root".format(
                 self.csp.name))
         else:
-            status = self.bt_recurse(propagator, 1)   #now do recursive search
+            status = self.bt_recurse(propagator, 1, newheuristic)   #now do recursive search
 
 
         self.restoreValues(prunings)
@@ -525,7 +526,7 @@ class BT:
         print("bt_search finished")
         self.print_stats()
 
-    def bt_recurse(self, propagator, level):
+    def bt_recurse(self, propagator, level, newheuristic):
         '''Return true if found solution. False if still need to search.
            If top level returns false--> no solution'''
 
@@ -536,7 +537,10 @@ class BT:
             #all variables assigned
             return True
         else:
-            var = self.extractMCVvar()
+            if newheuristic:
+                var = self.extractMCVvar()
+            else:
+                var = self.extractMRVvar()
             if self.TRACE:
                 print('  ' * level, "bt_recurse var = ", var)
 
@@ -556,7 +560,7 @@ class BT:
                     print('  ' * level, "bt_recurse prop pruned = ", prunings)
 
                 if status:
-                    if self.bt_recurse(propagator, level+1):
+                    if self.bt_recurse(propagator, level+1, newheuristic):
                         return True
 
                 if self.TRACE:
