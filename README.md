@@ -14,3 +14,5 @@ If the parameter for newheuristic in bt_search is true, it runs the new heuristi
 
 
 Currently, the sample program is setup to run all the unsolved puzzels with all heuristic functions (Domain and constraint based.).
+
+Simple type "python3 ./kuromasu_sample_run.py" in terminal window to run the sample program.
