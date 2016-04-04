@@ -55,7 +55,7 @@ def kuromasu_csp_model_1(initial_futoshiki_board):
                      c.add_satisfying_tuples(tuple_list)                            
                      constraints.append(c)
        
-       #add constraints in a col to make sure no two squares are black. #makeAmericaGreatAgain
+       #add constraints in a col to make sure no two squares are black.
        
        for x in range(0, len(var_2d_list)):
               column = []
